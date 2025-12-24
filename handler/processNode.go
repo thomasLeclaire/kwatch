@@ -27,6 +27,14 @@ func (h *handler) ProcessNode(eventType string, obj runtime.Object) {
 	for _, c := range node.Status.Conditions {
 		if c.Type == corev1.NodeReady {
 			if c.Status == corev1.ConditionFalse && !h.memory.HasNode(node.Name) {
+				for _, pattern := range ctx.Config.IgnoreLogPatternsCompiled {
+					if pattern.MatchString(c.Message) {
+						logrus.Infof(
+							"skipping node %s logs as it matches the ignore log pattern",
+							node.Name)
+						return true
+					}
+				}
 				logrus.Printf("node %s is not ready: %s", node.Name, c.Reason)
 				h.alertManager.Notify(fmt.Sprintf("Node %s is not ready: %s - %s",
 					node.Name,
