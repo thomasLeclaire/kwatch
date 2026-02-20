@@ -35,7 +35,7 @@ func (f ContainerReasonsFilter) Execute(ctx *Context) bool {
 
 	if len(ctx.Config.AllowedReasons) > 0 &&
 		!slices.Contains(ctx.Config.AllowedReasons, ctx.Container.Reason) {
-		logrus.Infof(
+		logrus.Debugf(
 			"skipping reason %s as it is not in the reason allow list",
 			ctx.Container.Reason)
 		return true
@@ -43,7 +43,7 @@ func (f ContainerReasonsFilter) Execute(ctx *Context) bool {
 
 	if len(ctx.Config.ForbiddenReasons) > 0 &&
 		slices.Contains(ctx.Config.ForbiddenReasons, ctx.Container.Reason) {
-		logrus.Infof(
+		logrus.Debugf(
 			"skipping reason %s as it is in the reason forbid list",
 			ctx.Container.Reason)
 		return true

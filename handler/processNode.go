@@ -26,7 +26,7 @@ func (h *handler) ProcessNode(eventType string, obj runtime.Object) {
 	for _, c := range node.Status.Conditions {
 		if c.Type == corev1.NodeReady {
 			if c.Status == corev1.ConditionFalse && !h.memory.HasNode(node.Name) {
-				logrus.Printf("node %s is not ready: %s", node.Name, c.Reason)
+				logrus.Debugf("node %s is not ready: %s", node.Name, c.Reason)
 				// Skip alert if Reason is in IgnoreNodeReasons
 				for _, ignoreReason := range h.config.IgnoreNodeReasons {
 					if c.Reason == ignoreReason {

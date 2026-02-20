@@ -53,7 +53,7 @@ func (f PodStatusFilter) Execute(ctx *Context) bool {
 	if len(ctx.PodReason) > 0 &&
 		len(ctx.Config.AllowedReasons) > 0 &&
 		!slices.Contains(ctx.Config.AllowedReasons, ctx.PodReason) {
-		logrus.Infof(
+		logrus.Debugf(
 			"skipping reason %s for pod %s as it is not in the reason allow list",
 			ctx.PodReason,
 			ctx.Pod.Name)
@@ -63,7 +63,7 @@ func (f PodStatusFilter) Execute(ctx *Context) bool {
 	if len(ctx.PodReason) > 0 &&
 		len(ctx.Config.ForbiddenReasons) > 0 &&
 		slices.Contains(ctx.Config.ForbiddenReasons, ctx.PodReason) {
-		logrus.Infof(
+		logrus.Debugf(
 			"skipping reason %s for pod %s as it is in the reason forbid list",
 			ctx.PodReason,
 			ctx.Pod.Name)
