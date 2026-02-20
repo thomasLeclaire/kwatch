@@ -94,7 +94,9 @@ kubectl apply -f https://raw.githubusercontent.com/abahmed/kwatch/v0.10.4/deploy
 | `ignoreFailedGracefulShutdown` | If set to true, containers which are forcefully killed during shutdown (as their graceful shutdown failed) are not reported as error     |
 | `ignoreContainerNames`         | Optional list of container names to ignore    |
 | `ignorePodNames`               | Optional list of pod name regexp patterns to ignore    |
-| `IgnoreLogPatterns`            | Optional list of regexp patterns of logs to ignore     |
+| `ignoreLogPatterns`            | Optional list of regexp patterns of logs to ignore     |
+| `ignoreNodeMessages`           | Optional list of regexp patterns of node messages to ignore |
+| `ignoreNodeReasons`            | Optional list of node reasons to ignore |
 
 
 ### App
