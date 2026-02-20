@@ -29,7 +29,7 @@ func (f ContainerLogsFilter) Execute(ctx *Context) bool {
 
 	for _, pattern := range ctx.Config.IgnoreLogPatternsCompiled {
 		if pattern.MatchString(logs) {
-			logrus.Infof(
+			logrus.Debugf(
 				"skipping container %s logs as it matches the ignore log pattern",
 				container.Name)
 			return true

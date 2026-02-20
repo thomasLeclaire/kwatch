@@ -11,7 +11,7 @@ func (f NamespaceFilter) Execute(ctx *Context) bool {
 	// filter by namespaces in config if specified
 	if len(ctx.Config.AllowedNamespaces) > 0 &&
 		!slices.Contains(ctx.Config.AllowedNamespaces, ctx.Pod.Namespace) {
-		logrus.Infof(
+		logrus.Debugf(
 			"skipping namespace %s as it is not in the namespace allow list",
 			ctx.Pod.Namespace)
 		return true
@@ -19,7 +19,7 @@ func (f NamespaceFilter) Execute(ctx *Context) bool {
 
 	if len(ctx.Config.ForbiddenNamespaces) > 0 &&
 		slices.Contains(ctx.Config.ForbiddenNamespaces, ctx.Pod.Namespace) {
-		logrus.Infof(
+		logrus.Debugf(
 			"skipping namespace %s as it is in the namespace forbid list",
 			ctx.Pod.Namespace)
 		return true
