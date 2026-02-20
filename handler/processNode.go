@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"strings"
 	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -35,10 +34,10 @@ func (h *handler) ProcessNode(eventType string, obj runtime.Object) {
 						return
 					}
 				}
-				// Skip alert if Message matches in IgnoreNodeMessages
-				for _, ignoreMessage := range h.config.IgnoreNodeMessages {
-					if strings.Contains(c.Message, ignoreMessage) {
-						logrus.Debugf("Skipping Notify for node %s due to ignored message: %s", node.Name, c.Message)
+				// Skip alert if Message matches in IgnoreNodeMessages patterns
+				for _, pattern := range h.config.IgnoreNodeMessagesCompiled {
+					if pattern.MatchString(c.Message) {
+						logrus.Debugf("Skipping Notify for node %s due to ignored message pattern: %s", node.Name, c.Message)
 						return
 					}
 				}

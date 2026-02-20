@@ -71,8 +71,13 @@ type Config struct {
 
 	// IgnoreNodeReasons is an optional list of node reasons for which alerting should be skipped
 	IgnoreNodeReasons []string `yaml:"ignoreNodeReasons"`
-	// IgnoreNodeMessages is an optional list of node messages for which alerting should be skipped
+
+	// IgnoreNodeMessages is an optional list of regexp patterns of node messages for which alerting should be skipped
 	IgnoreNodeMessages []string `yaml:"ignoreNodeMessages"`
+
+	// Patterns are compiled from IgnoreNodeMessages after populating
+	// IgnoreNodeMessages configuration
+	IgnoreNodeMessagesCompiled []*regexp.Regexp
 }
 
 // App confing struct

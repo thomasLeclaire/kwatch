@@ -179,3 +179,87 @@ func TestIgnoreNodeReasonsSpecialChars(t *testing.T) {
 	assert.NotNil(cfg)
 	assert.Equal([]string{"reason-1", "reason_2", "reason.with.dot", "reason/with/slash"}, cfg.IgnoreNodeReasons)
 }
+
+func TestIgnoreNodeMessagesLoading(t *testing.T) {
+	assert := assert.New(t)
+
+	defer os.Unsetenv("CONFIG_FILE")
+	defer os.RemoveAll("config.yaml")
+
+	os.Setenv("CONFIG_FILE", "config.yaml")
+
+	n := Config{
+		IgnoreNodeMessages: []string{".*network not ready.*", ".*cni plugin not initialized.*"},
+	}
+	yamlData, _ := yaml.Marshal(&n)
+	os.WriteFile("config.yaml", yamlData, 0644)
+
+	cfg, _ := LoadConfig()
+	assert.NotNil(cfg)
+	assert.Equal([]string{".*network not ready.*", ".*cni plugin not initialized.*"}, cfg.IgnoreNodeMessages)
+	assert.Len(cfg.IgnoreNodeMessagesCompiled, 2)
+}
+
+func TestIgnoreNodeMessagesEmpty(t *testing.T) {
+	assert := assert.New(t)
+
+	defer os.Unsetenv("CONFIG_FILE")
+	defer os.RemoveAll("config.yaml")
+
+	os.Setenv("CONFIG_FILE", "config.yaml")
+
+	n := Config{
+		IgnoreNodeMessages: []string{},
+	}
+	yamlData, _ := yaml.Marshal(&n)
+	os.WriteFile("config.yaml", yamlData, 0644)
+
+	cfg, _ := LoadConfig()
+	assert.NotNil(cfg)
+	assert.Equal([]string{}, cfg.IgnoreNodeMessages)
+	assert.Len(cfg.IgnoreNodeMessagesCompiled, 0)
+}
+
+func TestIgnoreNodeMessagesPatternMatching(t *testing.T) {
+	assert := assert.New(t)
+
+	defer os.Unsetenv("CONFIG_FILE")
+	defer os.RemoveAll("config.yaml")
+
+	os.Setenv("CONFIG_FILE", "config.yaml")
+
+	n := Config{
+		IgnoreNodeMessages: []string{".*network not ready.*", "cni plugin not initialized", ".*temporary error.*"},
+	}
+	yamlData, _ := yaml.Marshal(&n)
+	os.WriteFile("config.yaml", yamlData, 0644)
+
+	cfg, _ := LoadConfig()
+	assert.NotNil(cfg)
+	assert.Len(cfg.IgnoreNodeMessagesCompiled, 3)
+
+	// Test pattern matching
+	assert.True(cfg.IgnoreNodeMessagesCompiled[0].MatchString("container runtime network not ready: NetworkReady=false"))
+	assert.True(cfg.IgnoreNodeMessagesCompiled[1].MatchString("cni plugin not initialized"))
+	assert.True(cfg.IgnoreNodeMessagesCompiled[2].MatchString("encountered a temporary error during request"))
+	assert.False(cfg.IgnoreNodeMessagesCompiled[0].MatchString("some other message"))
+}
+
+func TestIgnoreNodeMessagesInvalidPattern(t *testing.T) {
+	assert := assert.New(t)
+
+	defer os.Unsetenv("CONFIG_FILE")
+	defer os.RemoveAll("config.yaml")
+
+	os.Setenv("CONFIG_FILE", "config.yaml")
+
+	n := Config{
+		IgnoreNodeMessages: []string{"[invalid-regex"},
+	}
+	yamlData, _ := yaml.Marshal(&n)
+	os.WriteFile("config.yaml", yamlData, 0644)
+
+	cfg, _ := LoadConfig()
+	assert.NotNil(cfg)
+	assert.Len(cfg.IgnoreNodeMessagesCompiled, 0)
+}

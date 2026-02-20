@@ -62,6 +62,13 @@ func LoadConfig() (*Config, error) {
 		logrus.Errorf("Failed to compile log pattern: %s", err.Error())
 	}
 
+	// Prepare ignored node message patterns
+	config.IgnoreNodeMessagesCompiled, err =
+		getCompiledIgnorePatterns(config.IgnoreNodeMessages)
+	if err != nil {
+		logrus.Errorf("Failed to compile node message pattern: %s", err.Error())
+	}
+
 	// Parse proxy config
 	if len(config.App.ProxyURL) > 0 {
 		os.Setenv("HTTPS_PROXY", config.App.ProxyURL)
